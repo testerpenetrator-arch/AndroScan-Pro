@@ -2,6 +2,7 @@
 Sistema de Análisis de Seguridad y Generación de Inteligencia para Aplicaciones Android
 
 > Android Security Analysis & Threat Intelligence Generation Tool para Red Team
+Cristian Camilo Calderon
 
 [![Kotlin Version](https://img.shields.io/badge/Kotlin-2.0.0-blue.svg)](https://kotlinlang.org)
 [![API](https://img.shields.io/badge/API-26%2B-brightgreen.svg)](https://developer.android.com)
