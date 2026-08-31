@@ -26,20 +26,21 @@ Sistema de Análisis de Seguridad y Generación de Inteligencia para Aplicacione
 
 ## 🏗️ Arquitectura
 
-app/
-├── presentation/ # UI con Jetpack Compose + MVI (Google, 2025; viamgr, 2022)
-│ ├── ui/ # Pantallas y componentes
-│ ├── viewmodel/ # ViewModels con gestión de estado
-│ └── state/ # Estados UI (sealed classes)
-├── domain/ # Casos de uso y lógica de negocio (segnonna, 2021)
-│ ├── usecase/ # Casos de uso
-│ └── model/ # Modelos de dominio
-├── data/ # Repositorios y fuentes de datos (Google, 2025; Square, 2025)
-│ ├── repository/ # Implementación de repositorios
-│ ├── local/ # Fuentes locales (Room)
-│ └── remote/ # Fuentes remotas (Retrofit)
-└── buildSrc/ # Gestión de dependencias
+El proyecto sigue **Clean Architecture** con capas bien definidas y gestión centralizada de dependencias.
 
+app/
+├── presentation/                     # UI con Jetpack Compose + MVI (Google, 2025; viamgr, 2022)
+│   ├── ui/                           # Pantallas y componentes
+│   ├── viewmodel/                    # ViewModels con gestión de estado
+│   └── state/                        # Estados UI (sealed classes)
+├── domain/                           # Casos de uso y lógica de negocio (segnonna, 2021)
+│   ├── usecase/                      # Casos de uso
+│   └── model/                        # Modelos de dominio
+├── data/                             # Repositorios y fuentes de datos (Google, 2025; Square, 2025)
+│   ├── repository/                   # Implementación de repositorios
+│   ├── local/                        # Fuentes locales (Room)
+│   └── remote/                       # Fuentes remotas (Retrofit)
+└── buildSrc/                         # Gestión de dependencias
 
 ## 🛠️ Tecnologías
 
