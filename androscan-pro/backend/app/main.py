@@ -1,0 +1,122 @@
+from contextlib import asynccontextmanager
+import logging
+import re
+import time
+from uuid import uuid4
+
+from fastapi import FastAPI, Request
+from sqlalchemy import text
+from starlette.responses import Response
+from starlette.middleware.cors import CORSMiddleware
+
+from app.api.auth import router as auth_router
+from app.api.health import router as health_router
+from app.api.organizations import router as organizations_router
+from app.api.applications import router as applications_router
+from app.api.analyses import router as analyses_router
+from app.api.findings import router as findings_router
+from app.api.dashboard import router as dashboard_router
+from app.api.comparisons import router as comparisons_router
+from app.api.reports import router as reports_router
+from app.api.ai_assistance import router as ai_assistance_router
+from app.api.administration import router as administration_router
+from app.core.config import get_settings
+from app.core.security_config import validate_production_secrets
+from app.db.session import engine
+
+settings = get_settings()
+logger = logging.getLogger("androscan.http")
+_TRACE_ID_PATTERN = re.compile(r"^[A-Za-z0-9._:-]{1,100}$")
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    if settings.app_env.lower() == "production":
+        validate_production_secrets(settings)
+    yield
+
+
+app = FastAPI(
+    title=settings.app_name,
+    version="0.2.0",
+    description="API de AndroScan para análisis de seguridad de APK.",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(health_router, prefix=settings.api_v1_prefix)
+app.include_router(auth_router, prefix=settings.api_v1_prefix)
+app.include_router(organizations_router, prefix=settings.api_v1_prefix)
+app.include_router(applications_router, prefix=settings.api_v1_prefix)
+app.include_router(analyses_router, prefix=settings.api_v1_prefix)
+app.include_router(findings_router, prefix=settings.api_v1_prefix)
+app.include_router(dashboard_router, prefix=settings.api_v1_prefix)
+app.include_router(comparisons_router, prefix=settings.api_v1_prefix)
+app.include_router(reports_router, prefix=settings.api_v1_prefix)
+app.include_router(ai_assistance_router, prefix=settings.api_v1_prefix)
+app.include_router(administration_router, prefix=settings.api_v1_prefix)
+
+
+@app.middleware("http")
+async def request_observability(request: Request, call_next) -> Response:
+    """Añade trazabilidad por petición sin registrar credenciales ni parámetros de consulta."""
+    incoming = request.headers.get("X-Trace-Id", "")
+    trace_id = incoming if _TRACE_ID_PATTERN.fullmatch(incoming) else str(uuid4())
+    request.state.trace_id = trace_id
+    started = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        response.headers["X-Trace-Id"] = trace_id
+        return response
+    except Exception:
+        logger.exception(
+            "request_failed",
+            extra={"trace_id": trace_id, "method": request.method, "path": request.url.path},
+        )
+        raise
+    finally:
+        duration_ms = round((time.perf_counter() - started) * 1000, 2)
+        logger.info(
+            "http_request",
+            extra={
+                "trace_id": trace_id,
+                "method": request.method,
+                "path": request.url.path,
+                "status_code": status_code,
+                "duration_ms": duration_ms,
+            },
+        )
+
+
+@app.get("/", tags=["system"])
+def root() -> dict[str, str]:
+    return {"service": settings.app_name, "status": "running"}
+
+
+@app.get(f"{settings.api_v1_prefix}/health/live", tags=["health"], summary="Comprobación de vida")
+def liveness() -> dict[str, str]:
+    return {"status": "ok", "service": settings.app_name}
+
+
+@app.get(f"{settings.api_v1_prefix}/health/ready", tags=["health"], summary="Disponibilidad de dependencias")
+def readiness() -> dict[str, str]:
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except Exception:
+        logger.exception("readiness_check_failed", extra={"dependency": "database"})
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail={"status": "not_ready", "dependency": "database"}) from None
+    return {"status": "ready", "service": settings.app_name, "database": "ok"}

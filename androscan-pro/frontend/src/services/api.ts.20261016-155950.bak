@@ -1,0 +1,37 @@
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
+export async function login(email: string, password: string) {
+  const res = await fetch(`${API}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+  if (!res.ok) throw new Error("Credenciales inválidas");
+  return res.json();
+}
+export async function getOrganizations(token: string) {
+  const res = await fetch(`${API}/organizations`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error("No fue posible cargar organizaciones");
+  return res.json();
+}
+export async function getDashboard(token: string, organizationId: string) {
+  const res = await fetch(`${API}/organizations/${organizationId}/dashboard`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error("No fue posible cargar el dashboard");
+  return res.json();
+}
+
+export async function getAdminSettings(token: string, organizationId: string) {
+  const res = await fetch(`${API}/organizations/${organizationId}/admin/settings`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(res.status === 403 ? "Tu rol no permite administrar esta organización" : "No fue posible cargar la configuración");
+  return res.json();
+}
+export async function updateAdminSettings(token: string, organizationId: string, payload: Record<string, unknown>) {
+  const res = await fetch(`${API}/organizations/${organizationId}/admin/settings`, { method: "PUT", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+  if (!res.ok) throw new Error("No fue posible guardar la configuración");
+  return res.json();
+}
+export async function getToolPolicy(token: string, organizationId: string) {
+  const res = await fetch(`${API}/organizations/${organizationId}/admin/tools`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error("No fue posible cargar las herramientas habilitadas");
+  return res.json();
+}
+export async function updateToolPolicy(token: string, organizationId: string, enabled_tools: string[]) {
+  const res = await fetch(`${API}/organizations/${organizationId}/admin/tools`, { method: "PUT", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify({ enabled_tools }) });
+  if (!res.ok) throw new Error("No fue posible guardar las herramientas");
+  return res.json();
+}

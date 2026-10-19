@@ -1,0 +1,19 @@
+#Mon Oct 19 01:35:02 GMT-05:00 2026
+base.0=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+base.1=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.2=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeProjectDexDebug/1/classes.dex
+base.3=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeProjectDexDebug/8/classes.dex
+base.4=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex
+base.5=/home/luzb3l/d0j0/UNIVERSIDAD/DesarrolloAplicacionesMoviles/4Etapas/Etapa3/androscan-next/android-client/app/build/intermediates/dex/debug/mergeExtDexDebug/classes3.dex
+path.0=classes.dex
+path.1=0/classes.dex
+path.2=1/classes.dex
+path.3=8/classes.dex
+path.4=classes2.dex
+path.5=classes3.dex
+renamed.0=classes.dex
+renamed.1=classes2.dex
+renamed.2=classes3.dex
+renamed.3=classes4.dex
+renamed.4=classes5.dex
+renamed.5=classes6.dex

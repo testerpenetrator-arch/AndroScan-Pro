@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+coverage/
+*.log
+.idea/
+.vscode/
+# F9.16 secretos y respaldos operativos
+backups/
+*.dump
+*.tar.gz
+.env.production
+secrets/
